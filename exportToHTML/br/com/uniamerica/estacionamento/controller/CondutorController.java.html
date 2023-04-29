@@ -1,0 +1,143 @@
+<html>
+<head>
+<title>CondutorController.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+CondutorController.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">br.com.uniamerica.estacionamento.controller</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">br.com.uniamerica.estacionamento.Repository.CondutorRepository</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">br.com.uniamerica.estacionamento.Repository.MovimentacaoRepository</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">br.com.uniamerica.estacionamento.entity.Condutor</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.springframework.beans.factory.annotation.Autowired</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.springframework.dao.DataIntegrityViolationException</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.springframework.http.ResponseEntity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.springframework.stereotype.Controller</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.springframework.web.bind.annotation.*</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.List</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Optional</span><span class="s0">;</span>
+
+<span class="s1">@Controller</span>
+<span class="s1">@RequestMapping(value = </span><span class="s2">&quot;/api/condutor&quot;</span><span class="s1">)</span>
+<span class="s0">public class </span><span class="s1">CondutorController {</span>
+
+    <span class="s3">/* 
+ 
+      @Autowired = Usado para acessar outras Classes 
+      @RequestMapping = Mapeia os metodos da controller / Define o URI para  qual o metodo deve responder 
+      @GetMapping = é usada para mapear uma solicitação HTTP GET 
+      ResponseEntity = usado para enviar informações adicionais no cabeçalho ou corpo da resposta 
+      &lt;?&gt; = usada para indicar que um tipo específico pode ser usado, mas que ainda não é conhecido ou não é relevante em um determinado contexto 
+      @PathVariable =  é usada para mapear variáveis de caminho de URL em parâmetros de método 
+      orElse =   é usado para fornecer um valor padrão quando um valor não está presente 
+      badRequest = é usado para criar uma resposta HTTP 400 (Bad Request) 
+ 
+    */</span>
+
+
+
+
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">CondutorRepository condutorRepository</span><span class="s0">;</span>
+
+    <span class="s1">@Autowired</span>
+    <span class="s0">private </span><span class="s1">MovimentacaoRepository movimentacaoRepository</span><span class="s0">;</span>
+
+    <span class="s1">@GetMapping(</span><span class="s2">&quot;/{id}&quot;</span><span class="s1">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity&lt;?&gt; findByIdPath(@PathVariable(</span><span class="s2">&quot;id&quot;</span><span class="s1">) </span><span class="s0">final </span><span class="s1">Long id) {</span>
+        <span class="s0">final </span><span class="s1">Condutor condutor = </span><span class="s0">this</span><span class="s1">.condutorRepository.findById(id).orElse(</span><span class="s0">null</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s0">return </span><span class="s1">condutor == </span><span class="s0">null</span>
+                <span class="s1">? ResponseEntity.badRequest().body(</span><span class="s2">&quot;Nenhum valor encontrado.&quot;</span><span class="s1">)</span>
+                <span class="s1">: ResponseEntity.ok(condutor)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@GetMapping(</span><span class="s2">&quot;/lista&quot;</span><span class="s1">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity&lt;?&gt; findAll() {</span>
+        <span class="s0">final </span><span class="s1">List&lt;Condutor&gt; condutor = </span><span class="s0">this</span><span class="s1">.condutorRepository.findAll()</span><span class="s0">;</span>
+
+        <span class="s0">return </span><span class="s1">ResponseEntity.ok(condutor)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@GetMapping(</span><span class="s2">&quot;/ativos&quot;</span><span class="s1">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity&lt;?&gt; findByAtivo(){</span>
+        <span class="s0">final </span><span class="s1">List&lt;Condutor&gt; condutor = </span><span class="s0">this</span><span class="s1">.condutorRepository.findByAtivo(</span><span class="s0">true</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s0">return </span><span class="s1">ResponseEntity.ok(condutor)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@PostMapping</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity&lt;?&gt; cadastrar(@RequestBody </span><span class="s0">final </span><span class="s1">Condutor condutor){</span>
+        <span class="s0">try</span><span class="s1">{</span>
+            <span class="s0">this</span><span class="s1">.condutorRepository.save(condutor)</span><span class="s0">;</span>
+            <span class="s0">return </span><span class="s1">ResponseEntity.ok(</span><span class="s2">&quot;Registro cadastrado com sucesso&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        <span class="s0">catch </span><span class="s1">(DataIntegrityViolationException e){</span>
+            <span class="s0">return </span><span class="s1">ResponseEntity.internalServerError().body(</span><span class="s2">&quot;Error&quot; </span><span class="s1">+ e.getCause().getCause().getMessage())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@PutMapping(</span><span class="s2">&quot;/{id}&quot;</span><span class="s1">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity&lt;?&gt; editar(@RequestParam(</span><span class="s2">&quot;id&quot;</span><span class="s1">) </span><span class="s0">final </span><span class="s1">Long id</span><span class="s0">, </span><span class="s1">@RequestBody </span><span class="s0">final </span><span class="s1">Condutor condutor){</span>
+        <span class="s0">try</span><span class="s1">{</span>
+            <span class="s0">final </span><span class="s1">Condutor condutorBanco = </span><span class="s0">this</span><span class="s1">.condutorRepository.findById(id).orElse(</span><span class="s0">null</span><span class="s1">)</span><span class="s0">;</span>
+
+            <span class="s0">if</span><span class="s1">(condutorBanco == </span><span class="s0">null </span><span class="s1">|| !condutorBanco.getId().equals(condutor.getId()))</span>
+            <span class="s1">{</span>
+                <span class="s0">throw new </span><span class="s1">RuntimeException(</span><span class="s2">&quot;Não foi possível identificar o registro informado&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+
+            <span class="s0">this</span><span class="s1">.condutorRepository.save(condutor)</span><span class="s0">;</span>
+            <span class="s0">return </span><span class="s1">ResponseEntity.ok(</span><span class="s2">&quot;Registro editado com sucesso&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        <span class="s0">catch </span><span class="s1">(DataIntegrityViolationException e){</span>
+            <span class="s0">return </span><span class="s1">ResponseEntity.internalServerError().body(</span><span class="s2">&quot;Error &quot; </span><span class="s1">+ e.getCause().getCause().getMessage())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        <span class="s0">catch </span><span class="s1">(RuntimeException e){</span>
+            <span class="s0">return </span><span class="s1">ResponseEntity.internalServerError().body(</span><span class="s2">&quot;Error &quot; </span><span class="s1">+ e.getMessage())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@DeleteMapping(</span><span class="s2">&quot;/{id}&quot;</span><span class="s1">)</span>
+    <span class="s0">public </span><span class="s1">ResponseEntity&lt;?&gt; delete(@PathVariable </span><span class="s0">final </span><span class="s1">Long id) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">Optional&lt;Condutor&gt; optionalCondutor = condutorRepository.findById(id)</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(optionalCondutor.isPresent()) {</span>
+                <span class="s1">Condutor condutor = optionalCondutor.get()</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(movimentacaoRepository.existsByCondutor(condutor)) {</span>
+                    <span class="s1">condutor.setAtivo(</span><span class="s0">true</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s1">condutorRepository.save(condutor)</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">condutorRepository.delete(condutor)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+                <span class="s0">return </span><span class="s1">ResponseEntity.ok(</span><span class="s2">&quot;Condutor excluído com sucesso&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                <span class="s0">return </span><span class="s1">ResponseEntity.notFound().build()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(RuntimeException e) {</span>
+            <span class="s0">return </span><span class="s1">ResponseEntity.internalServerError().body(</span><span class="s2">&quot;Erro ao excluir condutor: &quot; </span><span class="s1">+ e.getMessage())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span>
+      <span class="s3">/*{ 
+        &quot;nome&quot;: &quot;João da &quot;, 
+        &quot;cpf&quot;: &quot;123.123.789-00&quot;, 
+        &quot;telefone&quot;: &quot;(11) 1233-9999&quot;, 
+        &quot;cadastro&quot;: &quot;2023-04-27T00:00:00&quot;, 
+        &quot;ativo&quot;: true 
+        }*/</span></pre>
+</body>
+</html>
