@@ -6,7 +6,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @Controller
@@ -19,23 +21,23 @@ public class ModeloController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findByIdPath(@PathVariable("id") final Long id){
-        final Modelo modelo = this.modeloService.findModeloById (id);
+    public ResponseEntity<?> findModeloById(@PathVariable("id")  Long id){
+         Modelo modelo = modeloService.findModeloById (id);
 
-        return ResponseEntity.ok(modeloService);
+        return ResponseEntity.ok().body(modelo);
     }
 
-    @GetMapping("/lista")
-    public ResponseEntity<List<Modelo>> findAll() {
-        List<Modelo> modelos = this.modeloService.findAllModelos();
-        return ResponseEntity.ok(modelos);
+    @GetMapping
+    public ResponseEntity<List<Modelo>> findAllModelos() {
+        List<Modelo> modelos = modeloService.findAllModelos();
+        return ResponseEntity.ok().body(modelos);
     }
 
 
     @GetMapping("/ativos")
-    public ResponseEntity<List<Modelo>> buscarAtivos() {
-        List<Modelo> modelos = this.modeloService.findAllModelosAtivos();
-        return ResponseEntity.ok(modelos);
+    public ResponseEntity<List<Modelo>> findModelosAtivos() {
+        List<Modelo> modelosAtivos = modeloService.findAllModelosAtivos();
+        return ResponseEntity.ok().body(modelosAtivos);
     }
 
 
@@ -44,18 +46,33 @@ public class ModeloController {
 
 
     @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestParam final Modelo modelo){
+    public ResponseEntity<Modelo> cadastrarModelo(@RequestBody  Modelo modelo){
+        modelo = modeloService.cadastrarModelo(modelo);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(modelo.getId()).toUri();
+        return ResponseEntity.created(uri).body(modelo);
+
+        /*
         try{
             this.modeloService.cadastroModelo(modelo);
             return ResponseEntity.ok("Registro cadastrado com sucesso");
         }
         catch (DataIntegrityViolationException e){
             return ResponseEntity.internalServerError().body("Error" + e.getCause().getCause().getMessage());
-        }
+        }*/
+
+
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> edicao(@PathVariable("id") final Long id, @RequestBody final Modelo modelo){
+    public ResponseEntity<?> edicao(@PathVariable("id")  Long id, @RequestBody  Modelo modelo){
+
+        modelo = modeloService.modificarModelo(modelo,id);
+
+        return ResponseEntity.ok(modelo);
+
+        /*
         try{
             final Modelo modeloBanco = this.modeloService.findModeloById(id);
 
@@ -73,10 +90,18 @@ public class ModeloController {
         catch (RuntimeException e){
             return ResponseEntity.internalServerError().body("Error " + e.getMessage());
         }
+
+         */
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable final Long id) {
+    public ResponseEntity<?> deletarModelo(@PathVariable  Long id) {
+
+        modeloService.deletarModelo(id);
+
+        return ResponseEntity.noContent().build();
+
+        /*
         try {
             this.modeloService.deletarModelo(id);
             return ResponseEntity.ok("Modelo excluído com sucesso");
@@ -87,6 +112,8 @@ public class ModeloController {
         } catch (RuntimeException e){
             return ResponseEntity.internalServerError().body("Error " + e.getMessage());
         }
+
+         */
     }
 
 

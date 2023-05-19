@@ -11,6 +11,11 @@ import org.hibernate.envers.Audited;
 @Table(name = "modelos", schema = "public")
 @AuditTable(value = "modelos_audit", schema = "audit")
 public class Modelo extends AbstractEntity{
+
+    @Getter @Setter
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
+
     @Getter @Setter
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "marca_Id", nullable = false)

@@ -17,10 +17,6 @@ public class ModeloService {
 
     @Autowired
     private ModeloRepository modeloRepository;
-    @Autowired
-    private VeiculoRepository veiculoRepository;
-    @Autowired
-    private MarcaRepository marcaRepository;
 
     public List<Modelo> findAllModelos(){
 
@@ -35,9 +31,9 @@ public class ModeloService {
 
 
     public Modelo findModeloById(Long id){
-        Optional<Modelo> modeloBD = this.modeloRepository.findById(id);
+        Optional<Modelo> modeloBD = modeloRepository.findById(id);
 
-        Assert.isTrue(!modeloBD.isEmpty(), "Modelo não encontrado");
+      //  Assert.isTrue(!modeloBD.isEmpty(), "Modelo não encontrado");
 
         return modeloBD.get();
 
@@ -45,9 +41,10 @@ public class ModeloService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public Modelo cadastroModelo(Modelo modelo){
-        Optional<Modelo> modeloBD = modeloRepository.findById(modelo.getId());
-        Assert.isTrue(modeloBD.get().getId() != modelo.getId(),"Id do Modelo já existe");
+    public Modelo cadastrarModelo(Modelo modelo){
+
+        /*Optional<Modelo> modeloBD = modeloRepository.findById(modelo.getId());
+        Assert.isTrue(modeloBD.get().getId() != modelo.getId(),"Id do Modelo já existe");*/
 
 
         return modeloRepository.save(modelo);
@@ -56,15 +53,15 @@ public class ModeloService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public Modelo modificarModelo(Modelo modelo){
+    public Modelo modificarModelo(Modelo modelo, Long id){
+        modelo.setId(id);
+
+        /*
         Optional<Modelo> modeloBD = modeloRepository.findById(modelo.getId());
-
-
-
         Assert.isTrue(!modeloBD.isEmpty(),"Modelo não existe");
         Assert.isTrue(modeloBD.get().getId() != modelo.getId(),"Id do Modelo já existe");
         Assert.isTrue(modeloBD.get().getNome() != modelo.getNome(),"Modelo já cadastrado");
-
+        */
         return modeloRepository.save(modelo);
     }
 
@@ -74,11 +71,15 @@ public class ModeloService {
 
     @Transactional(rollbackFor = Exception.class)
     public void deletarModelo(Long id) {
-        Optional<Modelo> modeloBD = this.modeloRepository.findById(id);
+
+        modeloRepository.deleteById(id);
+
+        /*
+
+       Optional<Modelo> modeloBD = this.modeloRepository.findById(id);
         Assert.isTrue(!modeloBD.isEmpty(),"Modelo não existe");
-
         this.modeloRepository.delete(modeloBD.get());
-
+        */
     }
 
 
