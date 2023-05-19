@@ -1,4 +1,4 @@
-package br.com.uniamerica.estacionamento.entity;
+package br.com.uniamerica.estacionamento.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,12 +10,16 @@ import org.hibernate.envers.Audited;
 
 
 @Entity
-//Audited
+@Audited
 @Table(name = "marcas", schema = "public")
-//@AuditTable(value = "marcas_audit", schema = "audit")
-
+@AuditTable(value = "marcas_audit", schema = "audit")
 public class Marca extends AbstractEntity{
+
     @Getter @Setter
-    @Column(name = "marca", nullable = false, unique = true)
-    private String marca;
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
+
+    @Getter @Setter
+    @Column(name = "nome", nullable = false, unique = true)
+    private String nome;
 }

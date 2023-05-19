@@ -1,15 +1,20 @@
-package br.com.uniamerica.estacionamento.entity;
+package br.com.uniamerica.estacionamento.Entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+
 import java.math.BigDecimal;
 import java.time.LocalTime;
 
     @Entity
+    @Audited
     @Table(name = "configuracao", schema = "public")
+    @AuditTable(value = "configuracao_audit", schema = "audit")
     public class Configuracao extends AbstractEntity{
         @Getter @Setter
         @Column(name = "valor_hora")

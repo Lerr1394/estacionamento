@@ -1,4 +1,4 @@
-package br.com.uniamerica.estacionamento.entity;
+package br.com.uniamerica.estacionamento.Entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

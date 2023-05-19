@@ -1,4 +1,4 @@
-package br.com.uniamerica.estacionamento.entity;
+package br.com.uniamerica.estacionamento.Entity;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import jakarta.persistence.Column;
@@ -6,14 +6,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
 import java.time.LocalTime;
 @Entity
+@Audited
 @Table(name = "condutores", schema = "public")
-//@AuditTable(value = "condutores_audit", schema = "audit")
+@AuditTable(value = "condutores_audit", schema = "audit")
 public class Condutor extends AbstractEntity{
+
     @Getter @Setter
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;

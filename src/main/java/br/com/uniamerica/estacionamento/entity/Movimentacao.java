@@ -1,4 +1,4 @@
-package br.com.uniamerica.estacionamento.entity;
+package br.com.uniamerica.estacionamento.Entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,9 +9,9 @@ import java.time.LocalTime;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 @Entity
-//@Audited
+@Audited
 @Table(name = "movimentacoes", schema = "public")
-//@AuditTable(value = "movimentacao_audit", schema = "audit")
+@AuditTable(value = "movimentacao_audit", schema = "audit")
 public class Movimentacao extends AbstractEntity{
     @Getter @Setter
     @Column(name = "entrada", nullable = false)
@@ -30,11 +30,15 @@ public class Movimentacao extends AbstractEntity{
     private LocalTime tempoMulta;
     @Getter @Setter
     @ManyToOne
-    @JoinColumn(name = "veiculo", nullable = false, unique = true)
+    @JoinColumn(name = "veiculo_id", nullable = false, unique = true)
     private Veiculo veiculo;
     @Getter @Setter
     @ManyToOne
-    @JoinColumn(name = "condutor", nullable = false)
+    @JoinColumn(name = "configuracao_id", nullable = false, unique = true)
+    private Configuracao configuracao;
+    @Getter @Setter
+    @ManyToOne
+    @JoinColumn(name = "condutor_id", nullable = false)
     private Condutor condutor;
     @Getter @Setter
     @Column(name = "valor_multa", nullable = false)

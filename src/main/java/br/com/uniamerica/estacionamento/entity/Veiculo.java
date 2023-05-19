@@ -1,4 +1,4 @@
-package br.com.uniamerica.estacionamento.entity;
+package br.com.uniamerica.estacionamento.Entity;
 import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import jakarta.persistence.*;
@@ -8,9 +8,9 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-//Audited
+@Audited
 @Table(name = "veiculos", schema = "public")
-//@AuditTable(value = "veiculo_audit", schema = "audit")
+@AuditTable(value = "veiculo_audit", schema = "audit")
 
 public class Veiculo extends AbstractEntity {
 
@@ -23,8 +23,8 @@ public class Veiculo extends AbstractEntity {
     private Cor cor;
     @Getter @Setter
     @ManyToOne
-    @JoinColumn(name = "modelo", nullable = false)
-    private Modelo modelo;
+    @JoinColumn(name = "modelo_id", nullable = false)
+    private Modelo modeloId;
     @Getter @Setter
     @Column(name = "tipo", length = 20, nullable = false)
     @Enumerated(EnumType.STRING)

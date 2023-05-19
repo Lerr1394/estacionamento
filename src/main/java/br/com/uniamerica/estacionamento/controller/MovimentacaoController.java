@@ -1,42 +1,35 @@
-package br.com.uniamerica.estacionamento.controller;
+package br.com.uniamerica.estacionamento.Controller;
 
-import br.com.uniamerica.estacionamento.Repository.MovimentacaoRepository;
-import br.com.uniamerica.estacionamento.entity.Modelo;
-import br.com.uniamerica.estacionamento.entity.Movimentacao;
+import br.com.uniamerica.estacionamento.Entity.Movimentacao;
+import br.com.uniamerica.estacionamento.Service.MovimentaçaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/movimentacao")
 public class MovimentacaoController {
 
     @Autowired
-    private MovimentacaoRepository movimentacaoRepository;
+    private MovimentaçaoService movimentaçaoService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findByIdPath(@PathVariable("id") final Long id){
-        final Movimentacao movimentacao = this.movimentacaoRepository.findById(id).orElse(null);
-
-        return movimentacao == null
-                ? ResponseEntity.badRequest().body("Não encontrado.")
-                : ResponseEntity.ok(movimentacao);
+        final Movimentacao movimentacao = this.movimentaçaoService.findById(id);
+        return ResponseEntity.ok(movimentacao);
     }
 
     @GetMapping("/list")
     public ResponseEntity<?> findall(){
-        final List<Movimentacao> movimentacaos = this.movimentacaoRepository.findAll();
+        final List<Movimentacao> movimentacao = this.movimentaçaoService.findAll();
 
-        return ResponseEntity.ok(movimentacaos);
-    }
+        return ResponseEntity.ok(movimentacao);    }
         @GetMapping("/abertos")
     public ResponseEntity<List<Movimentacao>> findBySaida() {
-        final List<Movimentacao> movimentacaos = this.movimentacaoRepository.findBySaidaIsNull();
+        final List<Movimentacao> movimentacaos = this.movimentaçaoService.findBySaidaIsNull();
 
         return ResponseEntity.ok(movimentacaos);
     }
@@ -44,50 +37,47 @@ public class MovimentacaoController {
     @PostMapping
     public ResponseEntity<?> editar(@RequestParam final Movimentacao movimentacaos){
         try{
-            this.movimentacaoRepository.save(movimentacaos);
-            return ResponseEntity.ok("Cadastro efetuado com sucesso");
+            this.movimentaçaoService.cadastrar(movimentacaos);
+            return ResponseEntity.ok("Registro cadastrado com sucesso");
         }
-        catch (DataIntegrityViolationException e){
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (DataIntegrityViolationException e){
             return ResponseEntity.internalServerError().body("Error" + e.getCause().getCause().getMessage());
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> editar(@RequestParam("id") final Long id, @RequestBody final Movimentacao movimentacaos){
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editar(@PathVariable("id") final Long id, @RequestBody final Movimentacao movimentacaos){
         try{
-            final Movimentacao movimentacaosBanco = this.movimentacaoRepository.findById(id).orElse(null);
+            final Movimentacao movimentacaosBanco = this.movimentaçaoService.findById(id);
 
             if(movimentacaosBanco == null || !movimentacaosBanco.getId().equals(movimentacaos.getId()))
             {
-                throw new RuntimeException("Não foi identificado o registro indicado");
+                throw new RuntimeException("Não foi possível identificar o registro informado");
             }
 
-            this.movimentacaoRepository.save(movimentacaos);
-            return ResponseEntity.ok("Modificação realizada com sucesso");
+            this.movimentaçaoService.Update(movimentacaos);
+            return ResponseEntity.ok("Registro editado com sucesso");
         }
-        catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getCause().getCause().getMessage());
-        }
-        catch (RuntimeException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getMessage());
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (DataIntegrityViolationException e){
+            return ResponseEntity.internalServerError().body("Error" + e.getCause().getCause().getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable final Long id) {
-        final Optional<Movimentacao> movimentacaoOptional = this.movimentacaoRepository.findById(id);
-
-        if (movimentacaoOptional.isPresent()) {
-            final Movimentacao movimentacao = movimentacaoOptional.get();
-
-            if (!movimentacao.isAtivo()) {
-                this.movimentacaoRepository.delete(movimentacao);
-                return ResponseEntity.ok("Exclusão  realizada com sucesso");
-            } else {
-                return ResponseEntity.badRequest().body("A movimentação ativa não pode ser excluida.");
-            }
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> delete(@PathVariable final Long id) {
+        try {
+            this.movimentaçaoService.delete(id);
+            return ResponseEntity.ok("veiculo excluído com sucesso");
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (DataIntegrityViolationException e){
+            return ResponseEntity.internalServerError().body("Error " + e.getCause().getCause().getMessage());
+        } catch (RuntimeException e){
+            return ResponseEntity.internalServerError().body("Error " + e.getMessage());
         }
     }
 }
