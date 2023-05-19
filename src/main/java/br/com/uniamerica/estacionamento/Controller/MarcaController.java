@@ -52,7 +52,7 @@ public class MarcaController {
 
         return ResponseEntity.ok(marcas);
     }
-*/
+
 
 
 /*

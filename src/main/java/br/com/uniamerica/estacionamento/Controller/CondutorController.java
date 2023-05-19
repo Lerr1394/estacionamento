@@ -7,7 +7,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @Controller
@@ -18,22 +20,19 @@ public class CondutorController {
     @Autowired
     private  CondutorService condutorService;
 
-    @Autowired
-    private CondutorRepository condutorRepository;
-
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findByIdPath(@PathVariable("id") final Long id) {
-        final Condutor condutor = this.condutorService.findCondById(id);
+    public ResponseEntity<?> findCondutorById(@PathVariable("id")  Long id) {
+         Condutor condutor = condutorService.findCondById(id);
 
         return ResponseEntity.ok(condutor);
     }
 
 
 
-    @GetMapping("/lista")
+    @GetMapping
     public ResponseEntity<List<Condutor>> findAllCondutores() {
-        List<Condutor> condutores = this.condutorService.findAllCondutores();
+        List<Condutor> condutores = condutorService.findAllCondutores();
         return ResponseEntity.ok(condutores);
     }
 
@@ -48,7 +47,18 @@ public class CondutorController {
 
 
     @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestBody final Condutor condutor){
+    public ResponseEntity<Condutor> cadastrarCond(@RequestBody  Condutor condutor){
+
+        condutor = condutorService.cadastroCondutor(condutor);
+
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(condutor.getId()).toUri();
+        return ResponseEntity.created(uri).body(condutor);
+
+
+
+        /*
         try{
             this.condutorService.cadastroCondutor(condutor);
             return ResponseEntity.ok("Registro cadastrado com sucesso");
@@ -57,13 +67,27 @@ public class CondutorController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (DataIntegrityViolationException e){
             return ResponseEntity.internalServerError().body("Error" + e.getCause().getCause().getMessage());
-        }
+        }*/
+
+
+
     }
 
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@PathVariable("id") final Long id, @RequestBody final Condutor condutor){
+    public ResponseEntity<?> editarCondutor(@PathVariable("id")  Long id, @RequestBody  Condutor condutor){
+
+        condutor = condutorService.modificarCondutor(condutor,id);
+
+        return  ResponseEntity.noContent().build();
+
+
+
+
+
+
+        /*
         try{
             this.condutorService.modificarCondutor(condutor);
             return ResponseEntity.ok("Registro editado com sucesso");
@@ -76,11 +100,19 @@ public class CondutorController {
         catch (RuntimeException e){
             return ResponseEntity.internalServerError().body("Error " + e.getMessage());
         }
+
+         */
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable final Long id) {
+    public ResponseEntity<?> deletarCondutor(@PathVariable  Long id) {
+
+        condutorService.deletarCondutor(id);
+
+        return ResponseEntity.noContent().build();
+
+        /*
         try {
             this.condutorService.deletarCondutor(id);
             return ResponseEntity.ok("Condutor excluído com sucesso");
@@ -91,6 +123,9 @@ public class CondutorController {
         } catch (RuntimeException e){
             return ResponseEntity.internalServerError().body("Error " + e.getMessage());
         }
+
+
+         */
     }
 
 

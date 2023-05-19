@@ -25,7 +25,7 @@ public class MarcaService {
     public Marca findMarcaById(Long id){
         Optional<Marca> marcaBD = marcaRepository.findById(id);
 
-        //Assert.isTrue(!marcaBD.isEmpty(), "Marca não encontrado");
+        Assert.isTrue(!marcaBD.isEmpty(), "Marca não encontrado");
 
         return marcaBD.get();
 
