@@ -13,8 +13,8 @@ public interface ModeloRepository extends JpaRepository<Modelo, Long> {
 
 
 
-    List<Modelo> findByAtivo(boolean ativo);
-
+    public List<Modelo> findByAtivo(boolean ativo);
+    public   Modelo findByNome(String nome);
 
 
 }

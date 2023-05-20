@@ -3,6 +3,7 @@ import br.com.uniamerica.estacionamento.Entity.Modelo;
 import br.com.uniamerica.estacionamento.Service.ModeloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,16 @@ public class ModeloController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findModeloById(@PathVariable("id")  Long id){
-         Modelo modelo = modeloService.findModeloById (id);
 
-        return ResponseEntity.ok().body(modelo);
+        try {
+            Modelo modelo = modeloService.findModeloById(id);
+            return ResponseEntity.ok().body(modelo);
+        }
+        catch (RuntimeException e){
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
     @GetMapping
@@ -46,22 +54,15 @@ public class ModeloController {
 
 
     @PostMapping
-    public ResponseEntity<Modelo> cadastrarModelo(@RequestBody  Modelo modelo){
-        modelo = modeloService.cadastrarModelo(modelo);
+    public ResponseEntity<?> cadastrarModelo(@RequestBody  Modelo modelo){
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(modelo.getId()).toUri();
-        return ResponseEntity.created(uri).body(modelo);
-
-        /*
         try{
-            this.modeloService.cadastroModelo(modelo);
-            return ResponseEntity.ok("Registro cadastrado com sucesso");
+             modeloService.cadastrarModelo(modelo);
+           return ResponseEntity.ok("Modelo cadastrado com sucesso");
         }
-        catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error" + e.getCause().getCause().getMessage());
-        }*/
-
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
 
     }
 

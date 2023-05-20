@@ -17,6 +17,8 @@ public class ModeloService {
 
     @Autowired
     private ModeloRepository modeloRepository;
+    @Autowired
+    private MarcaRepository marcaRepository;
 
     public List<Modelo> findAllModelos(){
 
@@ -31,9 +33,9 @@ public class ModeloService {
 
 
     public Modelo findModeloById(Long id){
-        Optional<Modelo> modeloBD = modeloRepository.findById(id);
 
-      //  Assert.isTrue(!modeloBD.isEmpty(), "Modelo não encontrado");
+        Optional<Modelo> modeloBD = modeloRepository.findById(id);
+        Assert.isTrue(!modeloBD.isEmpty(), "Modelo não encontrado");
 
         return modeloBD.get();
 
@@ -43,8 +45,18 @@ public class ModeloService {
     @Transactional(rollbackFor = Exception.class)
     public Modelo cadastrarModelo(Modelo modelo){
 
-        /*Optional<Modelo> modeloBD = modeloRepository.findById(modelo.getId());
-        Assert.isTrue(modeloBD.get().getId() != modelo.getId(),"Id do Modelo já existe");*/
+
+        Optional<Modelo> modeloBD = modeloRepository.findById(modelo.getId());
+        Assert.isTrue(modeloBD.isEmpty(),"Id do Modelo já existe");
+        Assert.isNull(modeloRepository.findByNome(modelo.getNome()),"Modelo já cadastrado com esse nome");
+        Assert.isTrue(modelo.getNome().length() >= 2,"Nome do modelo requer minimo 2 caracteres");
+        Assert.isTrue(modelo.getNome().length() <= 15,"Nome do modelo requer maximo 15 caracteres");
+        Assert.notNull(modelo.getMarca(),"Precisa asociar o modelo com uma marca");
+
+        Optional<Marca> marca = marcaRepository.findById(modelo.getMarca().getId());
+        Assert.isTrue(!marca.isEmpty(),"A marca que está tentando asociar não cadastrada");
+        Assert.notNull(marcaRepository.findByNome(modelo.getMarca().getNome()),"O nome do modelo que esta tentando asociar com a marca não existe");
+
 
 
         return modeloRepository.save(modelo);

@@ -74,7 +74,7 @@ public class MarcaService {
 
     @Transactional(rollbackFor = Exception.class)
     public void deletarMarca(Long id) {
-        
+
         Optional<Marca> marcaBD = marcaRepository.findById(id);
         Assert.isTrue(!marcaBD.isEmpty(),"Marca não encontrada para ser excluida");
 
