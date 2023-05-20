@@ -5,6 +5,7 @@ import br.com.uniamerica.estacionamento.Entity.Marca;
 import br.com.uniamerica.estacionamento.Service.MarcaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,6 @@ public class MarcaController {
     @GetMapping( "/{id}")
     public ResponseEntity<?> findMarcaById(@PathVariable Long id) {
 
-
         try{
             Marca marca = marcaService.findMarcaById(id);
             return ResponseEntity.ok().body(marca);
@@ -40,17 +40,16 @@ public class MarcaController {
     public ResponseEntity<List<Marca>> findAllMarcas() {
         List<Marca> marcas = marcaService.findAllMarcas();
 
-
         return ResponseEntity.ok().body(marcas);
     }
 
 
-/*
-    @GetMapping("/ativos")
-    public ResponseEntity<?> findByAtivo(){
-        final List<Marca> marcas = this.marcaService.findAllMarcasAtivos(true);
 
-        return ResponseEntity.ok(marcas);
+    @GetMapping("/ativos")
+    public ResponseEntity<?> findMarcaByAtivo(){
+        final List<Marca> marcas = marcaService.findAllMarcasAtivas();
+
+        return ResponseEntity.ok().body(marcas);
     }
 
 
@@ -70,32 +69,49 @@ public class MarcaController {
 */
 
     @PostMapping
-    public  ResponseEntity<Marca> createMarca(@RequestBody Marca marca){
-         marca = marcaService.cadastroMarca(marca);
-         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                 .buildAndExpand(marca.getId()).toUri();
-        return ResponseEntity.created(uri).body(marca);
+    public  ResponseEntity<?> createMarca(@RequestBody Marca marca){
+
+        try {
+            marcaService.cadastrarMarca(marca);
+            return ResponseEntity.ok().body("Cadastro de Marca Exitoso");
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
     }
 
 
 
   @PutMapping("/{id}")
-    public ResponseEntity<?> updateMarca(@RequestBody Marca marca, @PathVariable Long id){
+    public ResponseEntity<?> modificarMarca(@RequestBody Marca marca, @PathVariable Long id){
 
-        marca = marcaService.modificarMarca(marca,id);
+        try{
+            marcaService.modificarMarca(marca,id);
+            return ResponseEntity.ok("Marca modificada com sucesso");
+        }
+        catch(RuntimeException e) {
 
-        return ResponseEntity.noContent().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
+      }
+
 
     }
 
 
-    @DeleteMapping(path = {"/{id}"})
-    public ResponseEntity<?> deletar(@PathVariable Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletarMarca(@PathVariable Long id){
 
-        marcaService.deletarMarca(id);
+        try {
+            marcaService.deletarMarca(id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Marca excluida com sucesso");
 
-        return ResponseEntity.noContent().build();
+        }
+        catch (RuntimeException e){
+
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
 
     }
 

@@ -16,4 +16,5 @@ public interface ModeloRepository extends JpaRepository<Modelo, Long> {
     List<Modelo> findByAtivo(boolean ativo);
 
 
+
 }

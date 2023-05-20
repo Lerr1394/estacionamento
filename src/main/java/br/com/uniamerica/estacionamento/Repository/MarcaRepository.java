@@ -9,7 +9,7 @@ import java.util.List;
 public interface MarcaRepository extends JpaRepository<Marca, Long> {
 
 
-    /*public List<Marca> findMarcaByAtivo(boolean ativo);
+    public List<Marca> findMarcaByAtivo(boolean ativo);
     public Marca findByNome(String nome);
-*/
+
 }
