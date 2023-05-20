@@ -13,7 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-@RestController @Controller
+ @Controller
 @RequestMapping({"/api/marca"})
 public class MarcaController {
 
@@ -21,18 +21,17 @@ public class MarcaController {
     @Autowired
     private MarcaService marcaService;
 
-    @GetMapping(path = {"/{id}"})
+    @GetMapping( "/{id}")
     public ResponseEntity<?> findMarcaById(@PathVariable Long id) {
-         Marca marca = marcaService.findMarcaById(id);
 
-         return ResponseEntity.ok().body(marca);
 
-        /*try{
-            return  ResponseEntity.ok(marca);
+        try{
+            Marca marca = marcaService.findMarcaById(id);
+            return ResponseEntity.ok().body(marca);
         }
-        catch (Exception e){
+        catch (RuntimeException e){
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }*/
+        }
 
     }
 
@@ -40,6 +39,7 @@ public class MarcaController {
     @GetMapping
     public ResponseEntity<List<Marca>> findAllMarcas() {
         List<Marca> marcas = marcaService.findAllMarcas();
+
 
         return ResponseEntity.ok().body(marcas);
     }
@@ -80,7 +80,7 @@ public class MarcaController {
 
 
 
-  @PutMapping(path = {"/{id}"})
+  @PutMapping("/{id}")
     public ResponseEntity<?> updateMarca(@RequestBody Marca marca, @PathVariable Long id){
 
         marca = marcaService.modificarMarca(marca,id);

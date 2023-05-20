@@ -21,13 +21,16 @@ public class MarcaService {
         return marcaRepository.findAll();
     }
 
-
+@Transactional(rollbackFor = Exception.class)
     public Marca findMarcaById(Long id){
-        Optional<Marca> marcaBD = marcaRepository.findById(id);
+        Optional<Marca> marcaBD = this.marcaRepository.findById(id);
 
-        Assert.isTrue(!marcaBD.isEmpty(), "Marca não encontrado");
+        if(marcaBD.isEmpty()){
+            throw  new RuntimeException("Marca não encontrada");
+        }
 
-        return marcaBD.get();
+            return marcaBD.get();
+
 
     }
 

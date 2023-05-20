@@ -15,6 +15,10 @@ import java.time.LocalDate;
 public class Veiculo extends AbstractEntity {
 
     @Getter @Setter
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
+
+    @Getter @Setter
     @Column(name = "placa", length = 10, nullable = false, unique = true)
     private String placa;
     @Getter @Setter
