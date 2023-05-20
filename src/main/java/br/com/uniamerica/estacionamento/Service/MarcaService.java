@@ -5,6 +5,7 @@ import br.com.uniamerica.estacionamento.Repository.MarcaRepository;
 import br.com.uniamerica.estacionamento.Entity.Marca;
 import br.com.uniamerica.estacionamento.Repository.ModeloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -73,14 +74,9 @@ public class MarcaService {
 
     @Transactional(rollbackFor = Exception.class)
     public void deletarMarca(Long id) {
-
-        Modelo modelo = modeloRepository.;
+        
         Optional<Marca> marcaBD = marcaRepository.findById(id);
-        Assert.isTrue(!modeloRepository.findModeloByMarca(marcaBD.get().getId()).equals(marcaBD.get().getNome()),"Marca asociada a um modelo, não pode ser excluida");
         Assert.isTrue(!marcaBD.isEmpty(),"Marca não encontrada para ser excluida");
-
-
-
 
         marcaRepository.deleteById(id);
 
