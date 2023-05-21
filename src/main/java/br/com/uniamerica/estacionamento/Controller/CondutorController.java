@@ -4,6 +4,7 @@ import br.com.uniamerica.estacionamento.Entity.Condutor;
 import br.com.uniamerica.estacionamento.Service.CondutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +22,6 @@ public class CondutorController {
     private  CondutorService condutorService;
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findCondutorById(@PathVariable("id")  Long id) {
-         Condutor condutor = condutorService.findCondById(id);
-
-        return ResponseEntity.ok(condutor);
-    }
-
-
 
     @GetMapping
     public ResponseEntity<List<Condutor>> findAllCondutores() {
@@ -40,35 +33,39 @@ public class CondutorController {
 
     @GetMapping("/ativos")
     public ResponseEntity<List<Condutor>> buscarCondutoresAtivos() {
-        List<Condutor> condutoresAtivos = this.condutorService.findAllCondAtivos();
+        List<Condutor> condutoresAtivos = condutorService.findAllCondAtivos();
         return ResponseEntity.ok(condutoresAtivos);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findCondutorById(@PathVariable("id")  Long id) {
+
+        try {
+            Condutor condutor = condutorService.findCondById(id);
+            return ResponseEntity.ok(condutor);
+        }
+        catch (RuntimeException e){
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
 
 
     @PostMapping
-    public ResponseEntity<Condutor> cadastrarCond(@RequestBody  Condutor condutor){
+    public ResponseEntity<?> cadastrarCondutor(@RequestBody  Condutor condutor){
 
-        condutor = condutorService.cadastroCondutor(condutor);
+        try {
 
+            condutorService.cadastrarCondutor(condutor);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Condutor cadastrado com sucesso");
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(condutor.getId()).toUri();
-        return ResponseEntity.created(uri).body(condutor);
-
-
-
-        /*
-        try{
-            this.condutorService.cadastroCondutor(condutor);
-            return ResponseEntity.ok("Registro cadastrado com sucesso");
         }
-        catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error" + e.getCause().getCause().getMessage());
-        }*/
 
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
 
 
     }
@@ -76,41 +73,33 @@ public class CondutorController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editarCondutor(@PathVariable("id")  Long id, @RequestBody  Condutor condutor){
+    public ResponseEntity<?> ModificarCondutor(@PathVariable("id")  Long id, @RequestBody  Condutor condutor) {
 
-        condutor = condutorService.modificarCondutor(condutor,id);
+        try {
+            condutorService.modificarCondutor(condutor, id);
+            return ResponseEntity.status(HttpStatus.OK).body("Condutor modificado com sucesso");
+        } catch (RuntimeException e) {
 
-        return  ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
-
-
-
-
-
-        /*
-        try{
-            this.condutorService.modificarCondutor(condutor);
-            return ResponseEntity.ok("Registro editado com sucesso");
-
-        }catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getCause().getCause().getMessage());
         }
-        catch (RuntimeException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getMessage());
-        }
-
-         */
     }
+
+
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarCondutor(@PathVariable  Long id) {
 
-        condutorService.deletarCondutor(id);
+        try {
+            condutorService.deletarCondutor(id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Condutor excluido com sucesso");
+        }
+        catch (RuntimeException e){
 
-        return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
 
         /*
         try {

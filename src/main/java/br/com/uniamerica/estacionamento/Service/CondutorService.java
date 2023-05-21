@@ -35,28 +35,26 @@ public class CondutorService {
 
 
     public Condutor findCondById(Long id){
-        Optional<Condutor> condutorBD = this.condutorRepository.findById(id);
+        Optional<Condutor> condutorBD = condutorRepository.findById(id);
 
         Assert.isTrue(!condutorBD.isEmpty(), "Condutor não encontrado");
-
         return condutorBD.get();
 
     }
 
 
     @Transactional(rollbackFor = Exception.class)
-    public Condutor cadastroCondutor(Condutor condutor){
+    public Condutor cadastrarCondutor(Condutor condutor){
 
+        Optional<Condutor> condutorBD = condutorRepository.findById(condutor.getId());
 
-        /*Optional<Condutor> condutorBD = condutorRepository.findById(condutor.getId());
-
-        Assert.isTrue(condutorBD.get().getId() != condutor.getId(),"Id do condutor já existe");
-        Assert.isTrue(condutorBD.get().getCpf() != condutor.getCpf(),"CPF do condutor já cadastrado");
+        Assert.isTrue(condutorBD.isEmpty(),"Id do condutor já existe");
+        Assert.isTrue(!condutorRepository.findByCpf(condutor.getCpf()).isPresent(),"CPF do condutor já cadastrado");
         Assert.isTrue(condutor.getCpf().matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}"),"Formato de CPF invalido, deve ser: 000.000.000-00");
+        Assert.isTrue(!condutorRepository.findBytelefone(condutor.getTelefone()).isPresent(),"El telefone do condutor já esta cadastrado");
         Assert.isTrue(condutor.getTelefone().matches("\\(\\d{2}\\)\\d{5}-\\d{4}"),"Formato de TELEFONE invalido, deve ser: (00)0000-0000");
         Assert.isTrue(condutor.getNome().matches("[a-zA-Z\\s]+"),"Somente é permitido letras no nome");
 
-*/
         return condutorRepository.save(condutor);
 
     }
@@ -65,17 +63,17 @@ public class CondutorService {
     @Transactional(rollbackFor = Exception.class)
     public Condutor modificarCondutor(Condutor condutor, Long id){
 
-        condutor.setId(id);
-        /*
-        Optional<Condutor> condutorBD = condutorRepository.findById(condutor.getId());
+
+
+        Optional<Condutor> condutorBD = condutorRepository.findById(id);
         Assert.isTrue(!condutorBD.isEmpty(),"Condutor não existe");
-        Assert.isTrue(condutorBD.get().getId() != condutor.getId(),"Id do condutor já existe");
-        Assert.isTrue(condutorBD.get().getCpf() != condutor.getCpf(),"CPF do condutor já cadastrado");
+        Assert.isTrue(!condutorRepository.findByCpf(condutor.getCpf()).isPresent(),"CPF do condutor já cadastrado");
         Assert.isTrue(condutor.getCpf().matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}"),"Formato de CPF invalido, deve ser: 000.000.000-00");
+        Assert.isTrue(!condutorRepository.findBytelefone(condutor.getTelefone()).isPresent(),"El telefone do condutor já esta cadastrado");
         Assert.isTrue(condutor.getTelefone().matches("\\(\\d{2}\\)\\d{5}-\\d{4}"),"Formato de TELEFONE invalido, deve ser: (00)0000-0000");
         Assert.isTrue(condutor.getNome().matches("[a-zA-Z\\s]+"),"Somente é permitido letras no nome");
 
-         */
+
 
         return condutorRepository.save(condutor);
     }
@@ -85,13 +83,10 @@ public class CondutorService {
     public void deletarCondutor(Long id) {
 
         Optional<Condutor> marcaBD = this.condutorRepository.findById(id);
-        Assert.isTrue(!marcaBD.isEmpty(),"Marca não existe");
+        Assert.isTrue(!marcaBD.isEmpty(),"Condutor não existe");
 
 
         condutorRepository.deleteById(id);
-        // this.marcaRepository.delete(marcaBD.get());
-
-
 
 
 
