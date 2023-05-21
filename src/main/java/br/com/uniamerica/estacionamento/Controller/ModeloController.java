@@ -67,55 +67,35 @@ public class ModeloController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> edicao(@PathVariable("id")  Long id, @RequestBody  Modelo modelo){
+    public ResponseEntity<?> modificarModelo(@PathVariable("id")  Long id, @RequestBody  Modelo modelo){
 
-        modelo = modeloService.modificarModelo(modelo,id);
+        try {
+            modeloService.modificarModelo(modelo,id);
 
-        return ResponseEntity.ok(modelo);
-
-        /*
-        try{
-            final Modelo modeloBanco = this.modeloService.findModeloById(id);
-
-            if(modeloBanco == null || !modeloBanco.getId().equals(modelo.getId()))
-            {
-                throw new RuntimeException("Não foi possível identificar o registro informado");
-            }
-
-            this.modeloService.modificarModelo(modelo);
-            return ResponseEntity.ok("Registro editado com sucesso");
-        }
-        catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getCause().getCause().getMessage());
+            return ResponseEntity.ok().body("Modelo modificado com sucesso ");
         }
         catch (RuntimeException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
-         */
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarModelo(@PathVariable  Long id) {
 
-        modeloService.deletarModelo(id);
-
-        return ResponseEntity.noContent().build();
-
-        /*
         try {
-            this.modeloService.deletarModelo(id);
-            return ResponseEntity.ok("Modelo excluído com sucesso");
-        }catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getCause().getCause().getMessage());
-        } catch (RuntimeException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getMessage());
+            modeloService.deletarModelo(id);
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Modelo excluido com sucesso");
+        }
+        catch (RuntimeException e){
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
-         */
-    }
 
+    }
 
 }
