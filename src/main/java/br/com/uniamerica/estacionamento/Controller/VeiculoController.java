@@ -5,6 +5,7 @@ import br.com.uniamerica.estacionamento.Entity.Veiculo;
 import br.com.uniamerica.estacionamento.Service.VeiculoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +21,7 @@ public class VeiculoController {
     @Autowired
     private VeiculoService veiculoService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findVeiculoById(@PathVariable("id") Long id){
-         Veiculo veiculo = veiculoService.findVeiculoById(id);
 
-        return ResponseEntity.ok().body(veiculo);
-    }
 
 
 
@@ -43,30 +39,33 @@ public class VeiculoController {
     }
 
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findVeiculoById(@PathVariable("id") Long id){
 
+        try {
+            Veiculo veiculo = veiculoService.findVeiculoById(id);
+            return ResponseEntity.ok().body(veiculo);
+        }
+        catch (RuntimeException e){
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+    }
 
     @PostMapping
-    public ResponseEntity<Veiculo> cadastrar(@RequestBody  Veiculo veiculo){
+    public ResponseEntity<?> cadastrarVeiculo(@RequestBody  Veiculo veiculo){
 
-        veiculo = veiculoService.cadastroVeiculo(veiculo);
-
-        /*
-        try{
-            this.veiculoService.cadastroVeiculo(veiculo);
-            return ResponseEntity.ok("Registro cadastrado com sucesso");
-        }
-        catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error" + e.getCause().getCause().getMessage());
+        try {
+            veiculoService.cadastroVeiculo(veiculo);
+            return ResponseEntity.status(HttpStatus.OK).body("Veiculo cadstrado com sucesso");
         }
 
-         */
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
 
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(veiculo.getId()).toUri();
-        return ResponseEntity.created(uri).body(veiculo);
     }
 
 
@@ -77,55 +76,31 @@ public class VeiculoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> editarVeiculo(@PathVariable("id")  Long id, @RequestBody   Veiculo veiculo){
 
+    try {
+        veiculoService.modificarVeiculo(veiculo,id);
+        return ResponseEntity.status(HttpStatus.OK).body("Veiculo modificado com sucesso");
+    }
 
+    catch (RuntimeException e){
 
-        /*
-        try{
-            final Veiculo veiculoBanco = this.veiculoService.findVeiculoById(id);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 
-            if(veiculoBanco == null || !veiculoBanco.getId().equals(veiculo.getId()))
-            {
-                throw new RuntimeException("Não foi possível identificar o registro informado");
-            }
-
-            this.veiculoService.modificarVeiculo(veiculo);
-            return ResponseEntity.ok("Registro editado com sucesso");
-        }catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getCause().getCause().getMessage());
-        }
-        catch (RuntimeException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getMessage());
-        }
-
-         */
-
-
-        veiculo = veiculoService.modificarVeiculo(veiculo,id);
-        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable  Long id) {
-
-        veiculoService.deletarVeiculo(id);
-
-        return ResponseEntity.noContent().build();
-
-        /*
+    public ResponseEntity<?> deletarVeiculo(@PathVariable  Long id) {
         try {
-            this.veiculoService.deletarVeiculo(id);
-            return ResponseEntity.ok("veiculo excluído com sucesso");
-        }catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getCause().getCause().getMessage());
-        } catch (RuntimeException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getMessage());
+
+            veiculoService.deletarVeiculo(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Veiculo excluido com sucesso");
+
+        }
+        catch (RuntimeException e){
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
-         */
     }
 
 

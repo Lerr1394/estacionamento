@@ -16,5 +16,8 @@ public interface ModeloRepository extends JpaRepository<Modelo, Long> {
     public List<Modelo> findByAtivo(boolean ativo);
     public   Modelo findByNome(String nome);
 
+    public Modelo findByMarca(Marca marca);
+
+
 
 }

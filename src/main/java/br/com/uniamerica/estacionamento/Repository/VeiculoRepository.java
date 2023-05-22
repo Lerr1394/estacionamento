@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 public interface VeiculoRepository extends JpaRepository<Veiculo, Long> {
-    List<Veiculo> findByAtivo(boolean ativo);
+    public List<Veiculo> findByAtivo(boolean ativo);
 
+    public Veiculo findByPlaca(String placa);
 
 }
