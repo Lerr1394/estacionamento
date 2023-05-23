@@ -68,21 +68,11 @@ public class ConfiguracaoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> editar(@PathVariable("id") final Long id, @RequestBody final Configuracao configuracao){
         try{
-            final Configuracao configuracaoBanco = this.configuracaoRepository.findById(id).orElse(null);
-
-            if(configuracaoBanco == null || !configuracaoBanco.getId().equals(configuracao.getId()))
-            {
-                throw new RuntimeException("Não foi possível identificar o registro informado");
-            }
-
-            this.configuracaoRepository.save(configuracao);
-            return ResponseEntity.ok("Registro editado com sucesso");
+            configuracaoService.editarConfiguracao(configuracao,id);
+            return ResponseEntity.ok("Configuração editada con sucesso");
         }
-        catch (DataIntegrityViolationException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getCause().getCause().getMessage());
-        }
-        catch (RuntimeException e){
-            return ResponseEntity.internalServerError().body("Error " + e.getMessage());
+        catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

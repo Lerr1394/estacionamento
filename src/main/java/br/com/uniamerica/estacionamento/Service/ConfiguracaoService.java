@@ -60,6 +60,24 @@ public class ConfiguracaoService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void editarConfiguracao(Configuracao configuracao, Long id){
+
+        Optional<Configuracao> configuracaoBD = configuracaoRepository.findById(id);
+
+        Assert.isTrue(!configuracaoBD.isEmpty(),"Configuração no existe");
+        int total_vagas = 30;
+        Assert.isTrue(configuracao.getVagasCarro() <= total_vagas,"Numero máximo de vagas é 30");
+        total_vagas -= configuracao.getVagasCarro();
+        Assert.isTrue(configuracao.getVagasMoto() <= total_vagas,"Numero máximo de vagas é 30");
+        total_vagas -= configuracao.getVagasMoto();
+        Assert.isTrue(configuracao.getVagasVan() <= total_vagas,"Numero máximo de vagas é 30");
+        total_vagas -= configuracao.getVagasVan();
+
+
+        configuracaoRepository.save(configuracao);
+
+    }
 
 
 }
