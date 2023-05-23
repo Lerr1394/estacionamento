@@ -53,7 +53,7 @@ public class MarcaService {
         Assert.isTrue( marca.getNome().length() <= 15,"Quantidade de caracteres Maximos para ó nome é 15");
 
 
-        this.marcaRepository.save(marca);
+        marcaRepository.save(marca);
     }
 
 
